@@ -44,7 +44,7 @@ struct RegisterView: View {
             CircularButton(text: "REGISTER", preferredButton: true) {
                 if textfieldIsFilled() && isPasswordSame() {
                     Task {
-                        let token = await local.login(username: usernameText, password: passwordText)
+                        let token = await local.register(username: usernameText, password: passwordText)
                         if token.isEmpty {
                             cfmPasswordErrorText = "Username already exists"
                         } else {
@@ -55,6 +55,7 @@ struct RegisterView: View {
                     setErrorTexts()
                 }
             }
+            .padding(.horizontal)
         }
         .navigationTitle("Register")
         .navigationBarTitleDisplayMode(.large)

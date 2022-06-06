@@ -6,3 +6,20 @@
 //
 
 import Foundation
+
+class Network: ObservableObject {
+    
+    @Published var token: String = ""
+    
+    init() {
+        token = ""
+    }
+
+    func setToken(token: String) {
+        self.token = token
+    }
+    
+    func logout() {
+        self.token = ""
+    }
+}

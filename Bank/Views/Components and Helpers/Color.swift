@@ -16,4 +16,8 @@ extension Color {
     public static var shadowGray: Color {
         return Color(UIColor(red: 0.86, green: 0.86, blue: 0.86, alpha: 1))
     }
+    
+    public static var backgroundRed: Color {
+        return Color(UIColor(red: 0.99, green: 0.90, blue: 0.90, alpha: 1))
+    }
 }

@@ -37,6 +37,9 @@ struct BoxTextfield: View {
                 Rectangle()
                     .stroke(.black, lineWidth: 3)
             )
+            .onChange(of: text) { _ in
+                errorText = ""
+            }
             Text(errorText)
                 .font(.body)
                 .foregroundColor(.red)

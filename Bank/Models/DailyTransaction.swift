@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+struct DailyTransaction {
+    let date: Date
+    let transactions: [Transaction]
+}

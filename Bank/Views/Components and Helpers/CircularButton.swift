@@ -27,16 +27,17 @@ struct CircularButtonBase: View {
     var preferredButton: Bool = false
     
     var body: some View {
-        Text(text)
-            .bold()
-            .foregroundColor(preferredButton ? .white : .black)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 64)
-                    .foregroundColor(preferredButton ? .black : .white)
-            )
-            .overlay(RoundedRectangle(cornerRadius: 64)
-                .stroke(.black, lineWidth: 2)
-            )
+        ZStack {
+            RoundedRectangle(cornerRadius: 64)
+                .foregroundColor(preferredButton ? .black : .white)
+                .overlay(RoundedRectangle(cornerRadius: 64)
+                    .stroke(.black, lineWidth: 2)
+                )
+                .frame(height: 55)
+            Text(text)
+                .bold()
+                .foregroundColor(preferredButton ? .white : .black)
+                .padding()
+        }
     }
 }

@@ -48,9 +48,11 @@ struct LoginView: View {
                         setErrorTexts()
                     }
                 }
+                .padding(.horizontal)
                 NavigationLink(destination: RegisterView().environmentObject(networkObject)) {
                     CircularButtonBase(text: "REGISTER", preferredButton: false)
                 }
+                .padding(.horizontal)
             }
             .navigationTitle("Login")
             .navigationBarTitleDisplayMode(.large)
