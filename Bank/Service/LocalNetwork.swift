@@ -70,81 +70,68 @@ class LocalNetwork {
         return ""
     }
     
-    func getAccountInfo(token: String) -> AccountInfo {
+    func getAccountInfo(token: String) async -> AccountInfo {
         var accountInfo = AccountInfo(accountNo: "", balance: 0)
-        
-        // URL encoding of special chars and base 64-ing token (doesn't work)
-        
-//        var testToken = token.replacingOccurrences(of: ".", with: "%2E")
-//        testToken = testToken.replacingOccurrences(of: "-", with: "%2D")
-        
-//        let tokenData = token.data(using: String.Encoding.utf8)!
-//        let tokenBase64 = tokenData.base64EncodedString()
         
         let url = URL(string: "\(websiteURL)/balance")!
         var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data else { return }
-            do {
-                let decoded =  try JSONDecoder().decode(AccountInfo.self, from: data)
-                accountInfo = decoded
-                print(accountInfo.error)
-            } catch let error {
-                print(error)
-            }
-        }.resume()
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let decoded = try JSONDecoder().decode(AccountInfo.self, from: data)
+            accountInfo = decoded
+        } catch let error {
+            print(error)
+        }
         
         return accountInfo
     }
     
-    func getTransactionHistory(token: String) -> TransactionHistory {
+    func getTransactionHistory(token: String) async -> TransactionHistory {
         var transactionHistory = TransactionHistory(transactions: [Transaction]())
         
         let url = URL(string: "\(websiteURL)/transactions")!
         var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data else { return }
-            do {
-                let decoded =  try JSONDecoder().decode(TransactionHistory.self, from: data)
-                transactionHistory = decoded
-                print(transactionHistory.error)
-            } catch let error {
-                print(error)
-            }
-        }.resume()
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let decoded = try JSONDecoder().decode(TransactionHistory.self, from: data)
+            transactionHistory = decoded
+        } catch let error {
+            print(error)
+        }
         
         return transactionHistory
     }
     
-    func getPayeeInfo(token: String) -> PayeeInfo {
+    func getPayeeInfo(token: String) async -> PayeeInfo {
         var payeeInfo = PayeeInfo(payees: [Payee]())
         
         let url = URL(string: "\(websiteURL)/payees")!
         var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data else { return }
-            do {
-                let decoded =  try JSONDecoder().decode(PayeeInfo.self, from: data)
-                payeeInfo = decoded
-                print(payeeInfo.error)
-            } catch let error {
-                print(error)
-            }
-        }.resume()
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let decoded = try JSONDecoder().decode(PayeeInfo.self, from: data)
+            print(payeeInfo)
+            payeeInfo = decoded
+        } catch let error {
+            print(error)
+        }
         
         return payeeInfo
     }
     
-    func transfer(accountNo: String, amount: Double, description: String) async -> TransferInfo {
+    func transfer(token: String, accountNo: String, amount: Double, description: String) async -> TransferInfo {
         let localTransferInfo: LocalTransferInfo = LocalTransferInfo(receipientAccountNo: accountNo, amount: amount, description: description)
         var transferInfo: TransferInfo = TransferInfo(status: "", transactionId: "", amount: 0, description: "", recipientAccount: "")
         
@@ -156,6 +143,7 @@ class LocalNetwork {
         let url = URL(string: "\(websiteURL)/transfer")!
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "POST"
         
         do {

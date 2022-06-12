@@ -14,8 +14,6 @@ struct TransferView: View {
     
     @State var payeeInfo: PayeeInfo = PayeeInfo(payees: [Payee]())
     
-//    @State var testPayees: [Payee] = [Payee(id: "616d65d1d1b6fd6f12aeede8", name: "Andy", accountNo: "6554-630-9653"), Payee(id: "616d65d1d1b6fd6f12aeedea", name: "Emmie", accountNo: "7174-429-2937")]
-    
     // Payee
     let payeeTitle: String = "Payee"
     @State var chosenPayee: Payee = Payee(id: "", name: "", accountNo: "")
@@ -45,8 +43,10 @@ struct TransferView: View {
             Color.backgroundGray
                 .ignoresSafeArea()
             VStack {
+                if !payeeInfo.payees.isEmpty {
                 TransferPickerView(title: payeeTitle, payees: payeeInfo.payees, chosenPayee: $chosenPayee)
                     .padding()
+                }
                 BoxTextfield(title: amountTitle, isSecure: amountSecure, text: $amountText, errorText: $amountErrorText)
                     .keyboardType(.decimalPad)
                     .padding([.horizontal, .bottom])
@@ -62,7 +62,7 @@ struct TransferView: View {
                         amountErrorText = "Amount cannot be empty"
                     } else {
                         Task {
-                            let transactionResult = await local.transfer(accountNo: chosenPayee.accountNo, amount: Double(amountText) ?? 0, description: descriptionText)
+                            let transactionResult = await local.transfer(token: networkObject.token, accountNo: chosenPayee.accountNo, amount: Double(amountText) ?? 0, description: descriptionText)
                             if transactionResult.status == "success" {
                                 showAlert = true
                                 alertText = generateSuccessString(result: transactionResult)
@@ -81,7 +81,9 @@ struct TransferView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .onAppear() {
-            payeeInfo = local.getPayeeInfo(token: networkObject.token)
+            Task {
+                payeeInfo = await local.getPayeeInfo(token: networkObject.token)
+            }
         }
     }
 }

@@ -30,7 +30,7 @@ struct DailyTransactionView: View {
                             .bold()
                             .foregroundColor(.black)
                         Spacer()
-                        Text("\(isReceived(transaction: transaction) ? "" : "-")\(transaction.amount)")
+                        Text("\(isReceived(transaction: transaction) ? "" : "-")\(String(format: "%.2f", transaction.amount))")
                             .font(.subheadline)
                             .foregroundColor(isReceived(transaction: transaction) ? .green : .gray)
                     }

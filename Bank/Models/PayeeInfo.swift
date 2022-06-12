@@ -9,7 +9,7 @@ import Foundation
 
 struct PayeeInfo: Codable {
     var status: String? = ""
-    let payees: [Payee]
+    var payees: [Payee]
     var error: String? = ""
 
     enum CodingKeys: String, CodingKey {
@@ -20,5 +20,5 @@ struct PayeeInfo: Codable {
 }
 
 struct Payee: Codable, Hashable {
-    let id, name, accountNo: String
+    var id, name, accountNo: String
 }

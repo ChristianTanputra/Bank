@@ -17,8 +17,6 @@ struct DashboardView: View {
     
     @State var groupedTransactionHistory: [[Transaction]] = []
     
-//    @State var testTransHistory: TransactionHistory = TransactionHistory(transactions: [Transaction(transactionID: "123123123123", amount: 100, transactionDate: "2022-05-05T11:02:44.078Z", transDescription: "testing", transactionType: "transfer", receipient: Receipient(accountNo: "123123123", accountHolder: "Bob"), sender: Receipient(accountNo: "123123123123", accountHolder: "Bob")), Transaction(transactionID: "123123123123", amount: 100, transactionDate: "2022-05-05T11:02:44.078Z", transDescription: "testing", transactionType: "transfer", receipient: Receipient(accountNo: "123123123", accountHolder: "Bob"), sender: Receipient(accountNo: "123123123123", accountHolder: "Bob")), Transaction(transactionID: "231231232323232", amount: 10, transactionDate: "2022-04-02T09:19:35.174Z", transDescription: "not testing", transactionType: "received", receipient: Receipient(accountNo: "32323232", accountHolder: "jane"), sender: Receipient(accountNo: "", accountHolder: ""))])
-    
     let local = LocalNetwork()
     
     var body: some View {
@@ -30,6 +28,12 @@ struct DashboardView: View {
                     DashboardInfoView(accountInfo: $accountInfo)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom)
+                        .onTapGesture {
+                            Task {
+                                accountInfo = await local.getAccountInfo(token: networkObject.token)
+                                transactionHistory = await local.getTransactionHistory(token: networkObject.token)
+                            }
+                        }
                     Text("Your transaction history")
                         .bold()
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -48,9 +52,10 @@ struct DashboardView: View {
                 }
                 .onChange(of: networkObject.token) { tokenString in
                     if !tokenString.isEmpty {
-                        accountInfo = local.getAccountInfo(token: tokenString)
-                        transactionHistory = local.getTransactionHistory(token: tokenString)
-//                        groupedTransactionHistory = separateTransHistorybyDate()
+                        Task {
+                            accountInfo = await local.getAccountInfo(token: tokenString)
+                            transactionHistory = await local.getTransactionHistory(token: tokenString)
+                        }
                     }
                 }
             }
@@ -98,7 +103,7 @@ extension DashboardView {
         
         return transactions.sorted(by: { $0.processedDate?.compare($1.processedDate!) == .orderedDescending})
     }
-
+    
     func separateTransHistorybyDate() -> [DailyTransaction] {
         let sortedTransactions = dateSortedTransactionHistory()
         var transactions = [DailyTransaction]()
